@@ -38,10 +38,14 @@ module Passert
           "Assertion failed!"
         end
 
-      if message.is_a?(String)
-        raise AssertionFailed, message
+      # Remove this method from the backtrace, to make errors clearer.
+      backtrace = caller
+
+      case message
+      when Exception
+        raise message.class, message.message, backtrace
       else
-        raise message
+        raise AssertionFailed, message.to_s, backtrace
       end
     end
   end
