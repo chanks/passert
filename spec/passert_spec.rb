@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 class PassertSpec < Minitest::Spec
@@ -13,7 +15,7 @@ class PassertSpec < Minitest::Spec
       failure = e
     end
 
-    assert failure.backtrace.first.end_with?("spec/passert_spec.rb:11:in `block in <class:PassertSpec>'")
+    assert failure.backtrace.first.end_with?("spec/passert_spec.rb:13:in `block in <class:PassertSpec>'")
   end
 
   it "#assert should handle failures without a block" do
@@ -25,7 +27,7 @@ class PassertSpec < Minitest::Spec
     end
 
     assert_equal "blah!", failure.message
-    assert failure.backtrace.first.end_with?("spec/passert_spec.rb:22:in `block in <class:PassertSpec>'")
+    assert failure.backtrace.first.end_with?("spec/passert_spec.rb:24:in `block in <class:PassertSpec>'")
   end
 
   it "#assert? should return true or false, whether the argument would pass assert() or not" do
