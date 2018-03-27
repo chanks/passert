@@ -4,36 +4,20 @@ module Passert
   class AssertionFailed < StandardError; end
 
   class << self
-    def assert(first, second = (second_omitted = true; nil))
-      # Want to support:
-      #   assert(x)                       # Truthiness.
-      #   assert(thing, other)            # Trip-equals.
-      #   assert([thing1, thing2], other) # Multiple Trip-equals.
+    def assert?(*args)
+      pass, _, _ = _check_assertion(*args)
+      pass
+    end
 
-      if second_omitted
-        comparison = nil
-        truth      = first
-      else
-        comparison = first
-        truth      = second
-      end
-
-      pass =
-        if second_omitted
-          truth
-        elsif comparison.is_a?(Array)
-          comparison.any? { |k| k === truth }
-        else
-          comparison === truth
-        end
-
-      return truth if pass
+    def assert(*args)
+      pass, expected, actual = _check_assertion(*args)
+      return actual if pass
 
       message =
         if block_given?
           yield
-        elsif comparison
-          "Expected #{comparison.inspect}, got #{truth.inspect}!"
+        elsif expected
+          "Expected #{expected.inspect}, got #{actual.inspect}!"
         else
           "Assertion failed!"
         end
@@ -47,6 +31,34 @@ module Passert
       else
         raise AssertionFailed, message.to_s, backtrace
       end
+    end
+
+    private
+
+    def _check_assertion(first, second = (second_omitted = true; nil))
+      # Want to support:
+      #   assert(x)                       # Truthiness.
+      #   assert(thing, other)            # Trip-equals.
+      #   assert([thing1, thing2], other) # Multiple Trip-equals.
+
+      if second_omitted
+        expected = nil
+        actual   = first
+      else
+        expected = first
+        actual   = second
+      end
+
+      pass =
+        if second_omitted
+          actual
+        elsif expected.is_a?(Array)
+          expected.any? { |k| k === actual }
+        else
+          expected === actual
+        end
+
+      [!!pass, expected, actual]
     end
   end
 end
